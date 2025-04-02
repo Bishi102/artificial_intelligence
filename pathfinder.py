@@ -36,7 +36,7 @@ def getCost(curr, next):
          
 def bfs(start, goal, map):
     visited = set()
-    queue = [(start, 0, [start])] # (position, path)
+    queue = [(start, [start])] # (position, path)
     while queue:
         (row,col), path = queue.pop(0)
         if (row,col) == goal:
@@ -51,16 +51,17 @@ def bfs(start, goal, map):
 # EDIT THIS
 def ucs(start, goal, map):
     visited = set()
-    queue = [(start, 0, [start])] # (position, path)
-    while queue:
-        (row,col), path = queue.pop(0)
+    priorityQ = [(0, start, [start])] # (cost, position, path)
+    while priorityQ:
+        cost, (row,col), path = heapq.heappop(priorityQ)
         if (row,col) == goal:
             return path
-        if (row,col) in visited:
+        if (row,col) in visited and visited[(row,col)] <= cost:
             continue
-        visited.add((row,col))
+        visited[(row,col)] = cost
         for nx,ny in getMoves(row, col, map):
-            queue.append((nx,ny), path + [(nx,ny)])
+            newCost = cost + getCost(map[row][col], map[nx][ny])
+            heapq.heappush(priorityQ, (newCost, (nx,ny), path + [(nx,ny)]))
     return None
 
 # EDIT THIS
